@@ -1,8 +1,13 @@
+from typing import overload
+from xmlrpc.client import FastParser
 
 import pygame
 import os
 import sys
 import random
+
+from past.translation import transform
+
 WIDTH= 1400
 HEIGHT = 600
 FPS = 60
@@ -32,9 +37,17 @@ class Player_1(pygame.sprite.Sprite):
         self.mask = pygame.mask.from_surface(self.image)
         self.mask_outline = self.mask.outline()
         self.mask_list = []
-        self.rect.center= (200,380)
+        self.rect.center= (500,380)
         self.hp_bar ='blue'
         self.key = pygame.key.get_pressed()
+        self.mask = pygame.mask.from_surface(self.image)
+        self.mask_outline =self.mask.outline()
+
+
+
+
+
+
 
     def update(self):
         if self.rect.center[0] - player_2.rect.center[0]<0:
@@ -47,6 +60,24 @@ class Player_1(pygame.sprite.Sprite):
         self.attack()
         self.jumps()
         self.draw_hp_bar()
+        # if pygame.sprite.spritecollide(self, player_2_group, False):
+        #     player_2.hp -= 0.05
+        if self.anime_atk and self.flag_damage:
+            if len(set(self.mask_list) & set(player_2.mask_list)) >0:
+                player_2.hp -= 14
+                self.flag_damage = False
+
+        # if pygame.sprite.spritecollide(self, )
+        self.mask = pygame.mask.from_surface(self.image)
+        self.mask_outline = self.mask.outline()
+        self.mask_list = []
+        for i in self.mask_outline:
+            self.mask_list.append((i[0] + self.rect.x, i[1] + self.rect.y))
+        for point in self.mask_list:
+            x = point[0]
+            y = point[1]
+            pygame.draw.circle(sc, 'red', (x, y), 3)
+
 
 
     def move(self):
@@ -114,7 +145,10 @@ class Player_1(pygame.sprite.Sprite):
 
 
     def draw_hp_bar(self):
-        pygame.draw.rect(sc, self.hp_bar, (0,0, 600 * self.hp / 100,50))
+        pygame.draw.rect(sc, self.hp_bar, (0,0, 600 * self.hp / 83,50))
+
+
+
 
 
 
@@ -139,9 +173,12 @@ class Player_2(pygame.sprite.Sprite):
         self.mask = pygame.mask.from_surface(self.image)
         self.mask_outline = self.mask.outline()
         self.mask_list = []
-        self.rect.center= (400,380)
+        self.rect.center= (900,380)
         self.hp_bar ='red'
         self.key = pygame.key.get_pressed()
+        self.mask = pygame.mask.from_surface(self.image)
+        self.mask_outline = self.mask.outline()
+        self.timer_attack = 0
 
     def update(self):
         if self.rect.center[0] - player_1.rect.center[0]<0:
@@ -154,6 +191,28 @@ class Player_2(pygame.sprite.Sprite):
         self.attack()
         self.jumps()
         self.draw_hp_bar()
+        # if pygame.sprite.spritecollide(self, player_1_group, False):
+        #     player_1.hp -= 0.05
+        if self.anime_atk and self.flag_damage:
+            if len(set(self.mask_list) & set(player_1.mask_list)) >0:
+                player_1.hp -= 22
+                self.flag_damage = False
+
+        # if player_1.hp <= 0 :
+        #     print('game over Player 2 win')
+
+        self.mask = pygame.mask.from_surface(self.image)
+        self.mask_outline = self.mask.outline()
+        self.mask_list = []
+        for i in self.mask_outline:
+            self.mask_list.append((i[0] + self.rect.x, i[1] + self.rect.y))
+        for point in self.mask_list:
+            x = point[0]
+            y = point[1]
+            pygame.draw.circle(sc, 'red', (x, y), 3)
+
+
+
 
 
     def move(self):
@@ -220,7 +279,7 @@ class Player_2(pygame.sprite.Sprite):
             self.frame = 0
 
     def draw_hp_bar(self):
-        pygame.draw.rect(sc, self.hp_bar, (0, 0, 600 * self.hp / 200, 50))
+        pygame.draw.rect(sc, self.hp_bar, (700, 0, 600 * self.hp / 70, 50))
 
 
 
@@ -252,6 +311,7 @@ def restart():
     player_1_group.add(player_1)
     player_2 = Player_2({'idle': player_2_idle_image, 'run': player_2_run_image, 'atk': player_2_attack_image})
     player_2_group.add(player_2)
+
 
 
 
